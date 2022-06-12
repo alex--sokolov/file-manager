@@ -1,7 +1,7 @@
 import {startFileManager, exitFileManager} from "./components/startExit.js";
 import readline from "readline";
 import {
-  changeDirectory,
+  changeDirectory, createFile,
   getHomeDir,
   goUp,
   listDir, logCurrentPath, readFromFile
@@ -43,27 +43,10 @@ export const fileManager = async () => {
         listDir(currentPath);
         break;
       case 'cat' :
-
-        const pathToFile = path.join(currentPath, inputArray[1]);
-
-        const infoStream = new fs.createReadStream(pathToFile, {encoding: 'utf-8'});
-
-        infoStream.on('data', (data) => {
-          if(data !== '')
-            process.stdout.write(`${data}\n`);
-        });
-
-        infoStream.on('error', function(err){
-          if(err.code === 'ENOENT'){
-            stdout.write(`File does not exists\n`);
-          }else{
-            stdout.write(`Read Operation Failed\n`);
-          }
-        });
-
-        // await readFromFile(currentPath, inputArray[1]);
+        await readFromFile(currentPath, inputArray[1]);
         break;
       case 'add' :
+        await createFile(currentPath, inputArray[1]);
         break;
       case 'rn' :
         break;
@@ -85,7 +68,6 @@ export const fileManager = async () => {
       default :
         stdout.write(`There is no command "${command}". To see available commands type "?". Go ahead and try again\n`);
     }
-
   })
 };
 
