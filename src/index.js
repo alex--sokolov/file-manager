@@ -4,10 +4,12 @@ import {
   changeDirectory,
   getHomeDir,
   goUp,
-  listDir, logCurrentPath
+  listDir, logCurrentPath, readFromFile
 } from "./components/fileSystem.js";
 import {stdin, stdout} from "process";
 import {showListOfCommands} from "./components/commands.js";
+import path from "path";
+import fs from "fs";
 
 export const fileManager = async () => {
   const userName = await startFileManager();
@@ -37,10 +39,29 @@ export const fileManager = async () => {
       case 'cd' :
         currentPath = changeDirectory(currentPath, inputArray[1]);
         break;
-
       case 'ls' :
-
         listDir(currentPath);
+        break;
+      case 'cat' :
+
+        const pathToFile = path.join(currentPath, inputArray[1]);
+
+        const infoStream = new fs.createReadStream(pathToFile, {encoding: 'utf-8'});
+
+        infoStream.on('data', (data) => {
+          if(data !== '')
+            process.stdout.write(`${data}\n`);
+        });
+
+        infoStream.on('error', function(err){
+          if(err.code === 'ENOENT'){
+            stdout.write(`File does not exists\n`);
+          }else{
+            stdout.write(`Read Operation Failed\n`);
+          }
+        });
+
+        // await readFromFile(currentPath, inputArray[1]);
         break;
       case 'add' :
         break;

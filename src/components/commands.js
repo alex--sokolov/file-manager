@@ -4,6 +4,7 @@ const commands = [
   'up',
   'cd path_to_directory',
   'ls',
+  'cat path_to_file',
   'add new_file_name',
   'rn path_to_file new_filename',
   'cp path_to_file path_to_new_directory',
@@ -16,7 +17,8 @@ const commands = [
   'os --architecture',
   'hash path_to_file',
   'compress path_to_file path_to_destination',
-  'decompress path_to_file path_to_destination'
+  'decompress path_to_file path_to_destination',
+  '.exit'
 ];
 
 export const showListOfCommands = () => {

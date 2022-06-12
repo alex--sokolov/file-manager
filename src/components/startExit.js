@@ -43,11 +43,11 @@ export const getUserName = (args) => {
 
 export const startFileManager = async () => {
   const userName = getUserName(parseArgs());
-  stdout.write(`Welcome to the File Manager, ${userName}!`);
+  stdout.write(`Welcome to the File Manager, ${userName}!\n`);
   return userName;
 }
 
 export const exitFileManager = (userName) => {
-  stdout.write(`\n${userName}, good bye and have a nice day! `);
+  stdout.write(`\n${userName}, good bye and have a nice day!\n`);
   process.exit(0);
 }

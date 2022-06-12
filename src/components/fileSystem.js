@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import os from 'os';
 import {stdout} from "process";
+import {readFile} from "fs/promises";
 
 export const getHomeDir = () => os.homedir();
 export const logCurrentPath = (path) => {
@@ -18,7 +19,6 @@ export const goUp = (currentPath) => {
   logCurrentPath(newPath);
   return newPath;
 }
-
 export const listDir = (currentPath) => {
   fs.readdir(currentPath, (err, files) => {
     files.forEach(file => {
@@ -26,7 +26,6 @@ export const listDir = (currentPath) => {
     });
   });
 }
-
 export const changeDirectory = (currentPath, dir) => {
   let newPath = path.isAbsolute(dir)
       ? dir
@@ -40,3 +39,27 @@ export const changeDirectory = (currentPath, dir) => {
   logCurrentPath(newPath);
   return newPath;
 }
+export const readFromFile = async (currentPath, fileName) => {
+  const pathToFile = path.join(currentPath, fileName);
+
+  const infoStream = new fs.ReadStream(pathToFile, {encoding: 'utf-8'});
+
+  infoStream.on('data', function(){
+    let data = infoStream.read();
+    console.log('data', data);
+    if(data != null)
+      process.stdout.write(`${data}\n`);
+  });
+
+  infoStream.on('error', function(err){
+    if(err.code === 'ENOENT'){
+      stdout.write(`File does not exists ${err}\n`);
+    }else{
+      stdout.write(`Read Operation Failed ${err}\n`);
+    }
+  });
+
+  console.log('hhhhhhhhhhhhhhhh')
+
+}
+
