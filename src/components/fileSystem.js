@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import os from 'os';
 import {stdout} from "process";
-import {access, writeFile, copyFile} from "fs/promises";
+import {access, writeFile, copyFile, rm} from "fs/promises";
 import {throwFsError} from "./errors.js";
 
 export const getHomeDir = () => os.homedir();
@@ -151,6 +151,20 @@ export const copyFileToAnotherDir = async (currentPath, fileToCopy, pathToNewDir
       } catch (error) {
         throwFsError();
       }
+    }
+  } catch (error) {
+    throwFsError();
+  }
+}
+
+export const deleteFile = async (currentPath, fileName) => {
+  const filePath = path.resolve(currentPath, fileName);
+  try {
+    if (await exist(filePath)) {
+      await rm(filePath);
+      stdout.write(`File ${fileName} was deleted successfully\n`);
+    } else {
+      stdout.write(`Operation failed: There is no file ${fileName}\n`);
     }
   } catch (error) {
     throwFsError();

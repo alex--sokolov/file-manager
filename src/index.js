@@ -1,7 +1,7 @@
 import {startFileManager, exitFileManager} from "./components/startExit.js";
 import readline from "readline";
 import {
-  changeDirectory, copyFileToAnotherDir, createFile,
+  changeDirectory, copyFileToAnotherDir, createFile, deleteFile,
   getHomeDir,
   goUp,
   listDir, logCurrentPath, readFromFile, renameFile
@@ -83,6 +83,13 @@ export const fileManager = async () => {
       case 'mv' :
         break;
       case 'rm' :
+        if (inputArray.length < 2) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
+        await deleteFile(currentPath, inputArray[1]);
+        logCurrentPath(currentPath);
         break;
       case 'os' :
         break;
