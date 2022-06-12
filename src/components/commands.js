@@ -3,6 +3,7 @@ import {stdout} from "process";
 const commands = [
   'up',
   'cd path_to_directory',
+  'ls',
   'add new_file_name',
   'rn path_to_file new_filename',
   'cp path_to_file path_to_new_directory',
