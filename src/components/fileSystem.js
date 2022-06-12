@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import os from 'os';
 import {stdout} from "process";
-import {access, readFile, writeFile} from "fs/promises";
+import {access, writeFile, copyFile} from "fs/promises";
 import {throwFsError} from "./errors.js";
 
 export const getHomeDir = () => os.homedir();
@@ -61,16 +61,16 @@ export const readFromFile = async (currentPath, fileName) => {
     }
   });
 
-  infoStream.on('error', function(err){
-    if(err.code === 'ENOENT'){
+  infoStream.on('error', function (err) {
+    if (err.code === 'ENOENT') {
       stdout.write(`Operation failed: File does not exists\n`);
-    }else{
+    } else {
       stdout.write(`Operation failed: Read Operation Failed\n`);
     }
     logCurrentPath(currentPath);
   });
 
-  infoStream.on('end',() => {
+  infoStream.on('end', () => {
     logCurrentPath(currentPath);
   });
 }
@@ -80,8 +80,7 @@ export const createFile = async (currentPath, fileName) => {
   try {
     if (await exist(filePath)) {
       stdout.write(`Operation failed: File already exists\n`);
-    }
-    else {
+    } else {
       await writeFile(filePath, '');
       stdout.write('File was created successfully\n');
     }
@@ -94,22 +93,66 @@ export const renameFile = async (currentPath, pathToFile, newFileName) => {
   const fileWithWrongName = path.resolve(currentPath, pathToFile);
   const fileWithProperName = path.resolve(currentPath, newFileName);
 
-  await fs.access(fileWithProperName, fs.constants.F_OK, async (err)  => {
+  await fs.access(fileWithProperName, fs.constants.F_OK, async (err) => {
     if (!err) {
       stdout.write(`${fileWithProperName} 'already exists\n`);
       logCurrentPath(currentPath);
-    }
-    else {
-      await fs.rename(fileWithWrongName, fileWithProperName,function(err) {
-        if ( err ) {
+    } else {
+      await fs.rename(fileWithWrongName, fileWithProperName, function (err) {
+        if (err) {
           stdout.write(`There is no file: ${fileWithWrongName}\n`);
           logCurrentPath(currentPath);
-        }
-        else {
+        } else {
           stdout.write('File was renamed successfully\n');
           logCurrentPath(currentPath);
         }
       });
     }
   });
+}
+
+export const copyFileToAnotherDir = async (currentPath, fileToCopy, pathToNewDirectory) => {
+
+  const filePath = path.resolve(currentPath, fileToCopy);
+
+  const newDirPath = path.isAbsolute(pathToNewDirectory)
+      ? pathToNewDirectory
+      : path.join(currentPath, pathToNewDirectory);
+
+  const newFilePath = path.join(newDirPath, fileToCopy);
+
+  console.log('filePath', filePath);
+  console.log('newDirPath', newDirPath);
+  console.log('newFilePath', newFilePath);
+
+  try {
+    if (await exist(newFilePath)) {
+      stdout.write(`Operation failed: File already exists in specified directory\n`);
+    } else {
+      try {
+        if (await exist(filePath)) {
+          if (!await exist(newDirPath)) {
+            fs.mkdir(newDirPath, (err) => {
+              if (err) {
+                throwFsError();
+              }
+            });
+            stdout.write(`Directory ${pathToNewDirectory} was created successfully\n`);
+          }
+          try {
+            await copyFile(filePath, newFilePath);
+          } catch {
+            stdout.write(`Error when copying file ${fileToCopy}\n`);
+          }
+          stdout.write('File was successfully copied\n');
+        } else {
+          stdout.write(`Operation failed: File does not exist\n`);
+        }
+      } catch (error) {
+        throwFsError();
+      }
+    }
+  } catch (error) {
+    throwFsError();
+  }
 }
