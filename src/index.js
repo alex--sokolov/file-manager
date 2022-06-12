@@ -9,6 +9,7 @@ import {
 import {stdin, stdout} from "process";
 import {showListOfCommands} from "./components/commands.js";
 import {throwArgsError, throwFsError} from "./components/errors.js";
+import {calculateHash} from "./components/hash.js";
 
 export const fileManager = async () => {
   const userName = await startFileManager();
@@ -101,6 +102,13 @@ export const fileManager = async () => {
       case 'os' :
         break;
       case 'hash' :
+        if (inputArray.length < 2) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
+        await calculateHash(currentPath, inputArray[1]);
+        logCurrentPath(currentPath);
         break;
       case 'compress' :
         break;
