@@ -35,7 +35,6 @@ export const compress = async (action, currentPath, pathToFile, pathToDestinatio
                 process.stdout.write('File was successfully decompressed\n');
                 break;
             }
-
             logCurrentPath(currentPath);
           });
         }

@@ -21,12 +21,31 @@ const commands = [
   '.exit'
 ];
 
+const OS_params = [
+  '--EOL',
+  '--cpus',
+  '--homedir',
+  '--username',
+  '--architecture',
+]
+
+
 export const showListOfCommands = () => {
   stdout.write('- - - - - - - - - - - - - - - - -\n');
   stdout.write('AVAILABLE COMMANDS\n');
   stdout.write('- - - - - - - - - - - - - - - - -\n');
   commands.map(command => {
     stdout.write(`${command}\n`)
+  })
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+}
+
+export const showListOfOSParams = () => {
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+  stdout.write('AVAILABLE PARAMS for "os" command\n');
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+  OS_params.map(param => {
+    stdout.write(`${param}\n`)
   })
   stdout.write('- - - - - - - - - - - - - - - - -\n');
 }

@@ -11,6 +11,7 @@ import {showListOfCommands} from "./components/commands.js";
 import {throwArgsError} from "./components/errors.js";
 import {calculateHash} from "./components/hash.js";
 import {compress} from "./components/compress.js";
+import {osInfo} from "./components/os.js";
 
 export const fileManager = async () => {
   const userName = await startFileManager();
@@ -29,6 +30,7 @@ export const fileManager = async () => {
     switch (command) {
       case '?' :
         showListOfCommands();
+        logCurrentPath(currentPath);
         break;
       case '.exit' :
         exitFileManager(userName);
@@ -101,6 +103,13 @@ export const fileManager = async () => {
         logCurrentPath(currentPath);
         break;
       case 'os' :
+        if (inputArray.length < 2) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
+        osInfo(inputArray[1]);
+        logCurrentPath(currentPath);
         break;
       case 'hash' :
         if (inputArray.length < 2) {
