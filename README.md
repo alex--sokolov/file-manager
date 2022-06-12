@@ -5,7 +5,6 @@
 <ul>
 <ul>npm run start -- --username=your_username</ul>
 <ul>npm run start -- --username = your_username</ul>
-<ul>npm run start -- --username         =              your_username</ul>
 </ul>
 
 <h2>To see list of available commands type "?"</h2>
