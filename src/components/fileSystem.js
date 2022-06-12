@@ -4,6 +4,7 @@ import fs from "fs";
 import os from 'os';
 import {stdout} from "process";
 import {access, readFile, writeFile} from "fs/promises";
+import {throwFsError} from "./errors.js";
 
 export const getHomeDir = () => os.homedir();
 export const logCurrentPath = (path) => {
@@ -43,7 +44,7 @@ export const changeDirectory = (currentPath, dir) => {
   try {
     fs.accessSync(newPath, fs.constants.R_OK | fs.constants.W_OK);
   } catch (err) {
-    stdout.write(`Operation failed: Directory does not exists ${err}\n`);
+    stdout.write(`Operation failed: Directory does not exists.\n`);
     newPath = currentPath;
   }
   logCurrentPath(newPath);
@@ -62,10 +63,11 @@ export const readFromFile = async (currentPath, fileName) => {
 
   infoStream.on('error', function(err){
     if(err.code === 'ENOENT'){
-      stdout.write(`File does not exists\n`);
+      stdout.write(`Operation failed: File does not exists\n`);
     }else{
-      stdout.write(`Read Operation Failed\n`);
+      stdout.write(`Operation failed: Read Operation Failed\n`);
     }
+    logCurrentPath(currentPath);
   });
 
   infoStream.on('end',() => {
@@ -77,11 +79,37 @@ export const createFile = async (currentPath, fileName) => {
   const filePath = path.join(currentPath, fileName);
   try {
     if (await exist(filePath)) {
-      stdout.write("FS operation failed\n");
+      stdout.write(`Operation failed: File already exists\n`);
     }
-    await writeFile(filePath, '');
+    else {
+      await writeFile(filePath, '');
+      stdout.write('File was created successfully\n');
+    }
   } catch (error) {
-    stdout.write("FS operation failed\n");
+    throwFsError();
   }
 };
 
+export const renameFile = async (currentPath, pathToFile, newFileName) => {
+  const fileWithWrongName = path.resolve(currentPath, pathToFile);
+  const fileWithProperName = path.resolve(currentPath, newFileName);
+
+  await fs.access(fileWithProperName, fs.constants.F_OK, async (err)  => {
+    if (!err) {
+      stdout.write(`${fileWithProperName} 'already exists\n`);
+      logCurrentPath(currentPath);
+    }
+    else {
+      await fs.rename(fileWithWrongName, fileWithProperName,function(err) {
+        if ( err ) {
+          stdout.write(`There is no file: ${fileWithWrongName}\n`);
+          logCurrentPath(currentPath);
+        }
+        else {
+          stdout.write('File was renamed successfully\n');
+          logCurrentPath(currentPath);
+        }
+      });
+    }
+  });
+}

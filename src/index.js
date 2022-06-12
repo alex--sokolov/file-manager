@@ -4,12 +4,11 @@ import {
   changeDirectory, createFile,
   getHomeDir,
   goUp,
-  listDir, logCurrentPath, readFromFile
+  listDir, logCurrentPath, readFromFile, renameFile
 } from "./components/fileSystem.js";
 import {stdin, stdout} from "process";
 import {showListOfCommands} from "./components/commands.js";
-import path from "path";
-import fs from "fs";
+import {throwArgsError, throwFsError} from "./components/errors.js";
 
 export const fileManager = async () => {
   const userName = await startFileManager();
@@ -37,18 +36,39 @@ export const fileManager = async () => {
         currentPath = goUp(currentPath);
         break;
       case 'cd' :
+        if (inputArray.length < 2) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
         currentPath = changeDirectory(currentPath, inputArray[1]);
         break;
       case 'ls' :
         listDir(currentPath);
         break;
       case 'cat' :
+        if (inputArray.length < 2) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
         await readFromFile(currentPath, inputArray[1]);
         break;
       case 'add' :
+        if (inputArray.length < 2) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
         await createFile(currentPath, inputArray[1]);
         break;
       case 'rn' :
+        if (inputArray.length < 3) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
+        await renameFile(currentPath, inputArray[1], inputArray[2]);
         break;
       case 'cp' :
         break;
