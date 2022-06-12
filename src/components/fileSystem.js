@@ -121,13 +121,10 @@ export const copyFileToAnotherDir = async (currentPath, fileToCopy, pathToNewDir
 
   const newFilePath = path.join(newDirPath, fileToCopy);
 
-  console.log('filePath', filePath);
-  console.log('newDirPath', newDirPath);
-  console.log('newFilePath', newFilePath);
-
   try {
     if (await exist(newFilePath)) {
       stdout.write(`Operation failed: File already exists in specified directory\n`);
+      return false;
     } else {
       try {
         if (await exist(filePath)) {
@@ -143,17 +140,22 @@ export const copyFileToAnotherDir = async (currentPath, fileToCopy, pathToNewDir
             await copyFile(filePath, newFilePath);
           } catch {
             stdout.write(`Error when copying file ${fileToCopy}\n`);
+            return false;
           }
           stdout.write('File was successfully copied\n');
+          return true;
         } else {
           stdout.write(`Operation failed: File does not exist\n`);
+          return false;
         }
       } catch (error) {
         throwFsError();
+        return false;
       }
     }
   } catch (error) {
     throwFsError();
+    return false;
   }
 }
 
@@ -168,5 +170,11 @@ export const deleteFile = async (currentPath, fileName) => {
     }
   } catch (error) {
     throwFsError();
+  }
+}
+
+export const moveFileToAnotherDir = async (currentPath, fileToMove, pathToNewDirectory) => {
+  if (await copyFileToAnotherDir(currentPath, fileToMove, pathToNewDirectory)) {
+    await deleteFile(currentPath, fileToMove);
   }
 }

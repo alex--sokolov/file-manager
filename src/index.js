@@ -4,7 +4,7 @@ import {
   changeDirectory, copyFileToAnotherDir, createFile, deleteFile,
   getHomeDir,
   goUp,
-  listDir, logCurrentPath, readFromFile, renameFile
+  listDir, logCurrentPath, moveFileToAnotherDir, readFromFile, renameFile
 } from "./components/fileSystem.js";
 import {stdin, stdout} from "process";
 import {showListOfCommands} from "./components/commands.js";
@@ -81,6 +81,13 @@ export const fileManager = async () => {
         logCurrentPath(currentPath);
         break;
       case 'mv' :
+        if (inputArray.length < 3) {
+          throwArgsError();
+          logCurrentPath(currentPath);
+          break;
+        }
+        await moveFileToAnotherDir(currentPath, inputArray[1], inputArray[2]);
+        logCurrentPath(currentPath);
         break;
       case 'rm' :
         if (inputArray.length < 2) {
