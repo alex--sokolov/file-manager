@@ -8,9 +8,9 @@ import {
 } from "./components/fileSystem.js";
 import {stdin, stdout} from "process";
 import {showListOfCommands} from "./components/commands.js";
-import {throwArgsError, throwFsError} from "./components/errors.js";
+import {throwArgsError} from "./components/errors.js";
 import {calculateHash} from "./components/hash.js";
-import {compress} from "./components/zip.js";
+import {compress} from "./components/compress.js";
 
 export const fileManager = async () => {
   const userName = await startFileManager();
@@ -117,7 +117,7 @@ export const fileManager = async () => {
           logCurrentPath(currentPath);
           break;
         }
-        await compress(currentPath, inputArray[1], inputArray[2]);
+        await compress('compress', currentPath, inputArray[1], inputArray[2]);
         break;
       case 'decompress' :
         if (inputArray.length < 3) {
@@ -125,8 +125,7 @@ export const fileManager = async () => {
           logCurrentPath(currentPath);
           break;
         }
-        await decompress(currentPath, inputArray[1], inputArray[2]);
-        logCurrentPath(currentPath);
+        await compress('decompress', currentPath, inputArray[1], inputArray[2]);
         break;
 
       default :

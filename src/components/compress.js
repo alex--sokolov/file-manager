@@ -5,8 +5,7 @@ import {exist, logCurrentPath} from "./fileSystem.js";
 import {stdout} from "process";
 import {throwFsError} from "./errors.js";
 
-export const compress = async (currentPath, pathToFile, pathToDestination) => {
-
+export const compress = async (action, currentPath, pathToFile, pathToDestination) => {
   const sourceFile = path.isAbsolute(pathToFile)
       ? pathToFile
       : path.join(currentPath, pathToFile);
@@ -14,7 +13,6 @@ export const compress = async (currentPath, pathToFile, pathToDestination) => {
   const distFile = path.isAbsolute(pathToDestination)
       ? pathToDestination
       : path.join(currentPath, pathToDestination);
-
   try {
     if (await exist(sourceFile)) {
       try {
@@ -24,10 +22,20 @@ export const compress = async (currentPath, pathToFile, pathToDestination) => {
         } else {
           const readStream = fs.createReadStream(sourceFile);
           const writeStream = fs.createWriteStream(distFile);
-          const brotli = zlib.createBrotliCompress();
+          const brotli = action === 'compress'
+          ? zlib.createBrotliCompress()
+          : zlib.createBrotliDecompress();
           const stream = readStream.pipe(brotli).pipe(writeStream);
           stream.on('finish', () => {
-            process.stdout.write('File was successfully compressed\n');
+            switch (action) {
+              case 'compress':
+                process.stdout.write('File was successfully compressed\n');
+                break;
+              case 'decompress':
+                process.stdout.write('File was successfully decompressed\n');
+                break;
+            }
+
             logCurrentPath(currentPath);
           });
         }
@@ -43,15 +51,4 @@ export const compress = async (currentPath, pathToFile, pathToDestination) => {
     throwFsError();
     logCurrentPath(currentPath);
   }
-
-
-  // const gzip = createGzip();
-  // const source = fs.createReadStream(fileInitial);
-  // const destination = fs.createWriteStream(fileCompressed);
-  // pipeline(source, gzip, destination, (err) => {
-  //   if (err) {
-  //     console.error('An error occurred:', err);
-  //     process.exitCode = 1;
-  //   }
-  // });
 };
