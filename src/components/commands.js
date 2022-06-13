@@ -1,0 +1,52 @@
+import {stdout} from "process";
+
+const commands = [
+  'up',
+  'cd path_to_directory',
+  'ls',
+  'cat path_to_file',
+  'add new_file_name',
+  'rn path_to_file new_filename',
+  'cp path_to_file path_to_new_directory',
+  'mv path_to_file path_to_new_directory',
+  'rm path_to_file',
+  'os --EOL',
+  'os --cpus',
+  'os --homedir',
+  'os --username',
+  'os --architecture',
+  'hash path_to_file',
+  'compress path_to_file path_to_destination',
+  'decompress path_to_file path_to_destination',
+  '.exit'
+];
+
+const OS_params = [
+  '--EOL',
+  '--cpus',
+  '--homedir',
+  '--username',
+  '--architecture',
+]
+
+
+export const showListOfCommands = () => {
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+  stdout.write('AVAILABLE COMMANDS\n');
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+  commands.map(command => {
+    stdout.write(`${command}\n`)
+  })
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+}
+
+export const showListOfOSParams = () => {
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+  stdout.write('AVAILABLE PARAMS for "os" command\n');
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+  OS_params.map(param => {
+    stdout.write(`${param}\n`)
+  })
+  stdout.write('- - - - - - - - - - - - - - - - -\n');
+}
+
